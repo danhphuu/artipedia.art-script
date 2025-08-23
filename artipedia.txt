@@ -13,7 +13,7 @@ const interruptedSelector = 'div.text-white.px-3.py-1.rounded-pill.small.d-flex.
 const closePopupSelector = 'body > div.fade.artipedia-video-modal.modal.show > div > div > div > div:nth-child(1) > div.jsx-8c4eaabccfb28791.position-absolute.top-0.end-0.m-3.d-flex.align-items-center.gap-2 > button';
 
 // ===== Control Variables =====
-let running = true;
+let running = false;
 let countdownInterval = null;
 
 // ===== UI =====
@@ -28,13 +28,15 @@ panel.style.borderRadius = "10px";
 panel.style.fontSize = "14px";
 panel.style.zIndex = "99999";
 panel.innerHTML = `
-  <div>Status: <span id="auto-status" style="color:lime">Starting...</span></div>
+  <div>Status: <span id="auto-status" style="color:lime">Stopped</span></div>
   <div>⏳ <span id="auto-countdown" style="color:lime">0</span>s</div>
+  <button id="toggle-btn" style="margin-top:8px; padding:4px 10px; border:none; border-radius:6px; background:#ff9800; color:#fff; cursor:pointer;">Start</button>
 `;
 document.body.appendChild(panel);
 
 const statusEl = document.getElementById("auto-status");
 const countdownEl = document.getElementById("auto-countdown");
+const toggleBtn = document.getElementById("toggle-btn");
 
 // ===== Helper Functions =====
 function updateStatus(msg, color="lime") {
@@ -48,6 +50,13 @@ function countdown(seconds, checkInterrupted=false) {
     countdownEl.style.color = "lime";
     clearInterval(countdownInterval);
     countdownInterval = setInterval(() => {
+      if (!running) {
+        updateStatus("⏸ Đang dừng vòng lặp...", "orange");
+        clearInterval(countdownInterval);
+        resolve("stopped");
+        return;
+      }
+
       remaining--;
       countdownEl.textContent = remaining;
 
@@ -89,22 +98,31 @@ async function waitForPopupClosed() {
   });
 }
 
+// ===== Reload Watcher (luôn chạy nền) =====
+setInterval(() => {
+  if (!running) return;
+  const reloadBtn = document.querySelector(reloadButtonSelector);
+  if (reloadBtn) {
+    updateStatus("🔄 Tìm thấy nút reload, chờ 2s...", "yellow");
+    setTimeout(() => {
+      if (reloadBtn && document.body.contains(reloadBtn)) {
+        updateStatus("🔄 Đang reload, chờ 10s...", "yellow");
+        reloadBtn.click();
+        setTimeout(() => {
+          updateStatus("✅ Reload xong, tiếp tục...", "lime");
+        }, 10000);
+      }
+    }, 2000);
+  }
+}, 3000);
+
 // ===== Main Flow =====
 async function autoLoop() {
   while (running) {
-    const reloadBtn = document.querySelector(reloadButtonSelector);
-    if (reloadBtn) {
-      updateStatus("🔄 Tìm thấy nút reload, chờ 2s...", "yellow");
-      await countdown(2);
-      if (reloadBtn && document.body.contains(reloadBtn)) {
-        updateStatus("🔄 Đang reload...", "yellow");
-        reloadBtn.click();
-        await countdown(10); // sau khi reload xong chờ 10s
-      }
-    }
-
     const selector = videoSelectors[Math.floor(Math.random() * videoSelectors.length)];
     const videoCard = document.querySelector(selector);
+
+    if (!running) break;
 
     if (videoCard) {
       updateStatus("🎬 Đang mở video...", "lime");
@@ -123,9 +141,9 @@ async function autoLoop() {
         updateStatus("▶️ Đang xem video...", "lime");
         const result = await countdown(duration, true); // checkInterrupted = true
 
-        if (result === "interrupted") {
+        if (result === "interrupted" || result === "stopped") {
           await countdown(5);
-          continue; // bỏ qua và chọn video khác
+          continue;
         }
       } else {
         updateStatus("❌ Không tìm thấy video trong popup!", "red");
@@ -150,4 +168,16 @@ async function autoLoop() {
   }
 }
 
-autoLoop();
+// ===== Start/Stop Button =====
+toggleBtn.addEventListener("click", () => {
+  if (!running) {
+    running = true;
+    updateStatus("▶️ Script đang chạy...", "lime");
+    toggleBtn.textContent = "Stop";
+    autoLoop();
+  } else {
+    running = false;
+    updateStatus("⏸ Script đã dừng", "orange");
+    toggleBtn.textContent = "Start";
+  }
+});
