@@ -1,5 +1,7 @@
 # artipedia.art-script
 auto wath video, bypass 
-HOW TO USE
+HOW TO USE:
+
 Copy and Paste to Console
+
 DONE!
