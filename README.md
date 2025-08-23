@@ -1,5 +1,5 @@
 # artipedia.art-script
-auto wath video, bypass 
+Auto watch video, bypass 
 HOW TO USE:
 
 Copy and Paste to Console
