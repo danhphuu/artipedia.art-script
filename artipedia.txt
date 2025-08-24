@@ -1,4 +1,4 @@
-// ===== Config =====  update start/stop
+// ===== Config =====  
 const videoSelectors = [
   '#__next > main > div.jsx-2f273c7328ee0c1d.section-padding > div > div.jsx-2f273c7328ee0c1d.card-style-grid > div > div:nth-child(11) > div > div.jsx-f174233d83cae69a.iq-card.bg-black.card-hover > div > div.jsx-f174233d83cae69a.card-body.p-3',
   '#__next > main > div.jsx-2f273c7328ee0c1d.section-padding > div > div.jsx-2f273c7328ee0c1d.card-style-grid > div > div:nth-child(10) > div > div.jsx-f174233d83cae69a.iq-card.bg-black.card-hover > div > div.jsx-f174233d83cae69a.card-body.p-3',
@@ -181,3 +181,4 @@ toggleBtn.addEventListener("click", () => {
     toggleBtn.textContent = "Start";
   }
 });
+
