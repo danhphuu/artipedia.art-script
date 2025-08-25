@@ -1,7 +1,9 @@
 # artipedia.art-script
-Auto watch video, bypass 
+Auto watch video
 HOW TO USE:
 
-Copy and Paste to Console
+Download and add extension
+Go https://artipedia.art/watch-to-earn
+Start extension
 
 DONE!
