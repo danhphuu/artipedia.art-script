@@ -1,4 +1,5 @@
 Auto watch video
+
 HOW TO USE:
 
 Download and add extension
